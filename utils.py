@@ -59,11 +59,16 @@ def plot_correlation(U, title="Correlation plot of consequtive numbers."):
     fig.show()
 
 
-def chi_sq_test(U, n_classes=10):
+def chi_sq_test(U, ps=None):
     
     # Compute expected number of observations in each class
-    n_expected = len(U) / n_classes
-    
+    if ps is None:
+        n_classes = 10
+        n_expected = len(U) / n_classes
+    else:
+        n_classes = len(ps)
+        n_expected = ps * len(U)
+
     # Count number of observations in each class
     n_obs, _ = np.histogram(U, bins=n_classes)
 
@@ -77,16 +82,22 @@ def chi_sq_test(U, n_classes=10):
     return T_obs, p
 
 
-def kolmogorov_smirnov_test(U):
+def kolmogorov_smirnov_test(U, ps=None):
 
     # Get number of observations
     n = len(U)
 
     # Setup expected values of F
-    F_exp = np.linspace(0, 1, n+1)[1:]
+    if ps is None:
+        F_exp = np.linspace(0, 1, n+1)[1:]
+        F_obs = np.sort(U)
+    else:
+        F_exp = np.cumsum(ps)
+        n_obs, _ = np.histogram(U, bins=len(ps))
+        F_obs = np.cumsum(n_obs / n)
 
     # Compute test statistic
-    Dn = max(abs(F_exp-np.sort(U)))
+    Dn = max(abs(F_exp-F_obs))
 
     # Compute p-value
     p = kolmogorov(Dn)
