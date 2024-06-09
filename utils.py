@@ -24,38 +24,23 @@ def LCG(a:int, c:int, M:int, x0:int, n:int, as_int=False):
         X[i] = (a*X[i-1] + c) % M
     
     if as_int:
-        return X
+        return X[1:]
     else:
-        return X/M
-    
+        return X[1:]/M
+
 
 # Histogram
-def plot_histogram(U, title="", n_bins=10): 
-    counts, bins = np.histogram(U, bins=n_bins)
-    bins = 0.5 * (bins[:-1] + bins[1:])
-    fig = fig = go.Figure(data=[go.Bar(x=bins, y=counts, marker_color='Green')])
-    fig.update_layout(
-        title_text=title,
-        xaxis_title="Value",
-        yaxis_title="Count",
-        width=600,
-        height=400,
-        bargap=0.1,
-    )
+def plot_histogram(U, title="", n_bins=20): 
+    fig = go.Figure(go.Histogram(x=U, xbins=dict(start=0, end=1, size=1/n_bins), histnorm='probability density', marker=dict(color='Green')))
+    fig.add_trace(go.Scatter(x=[0, 1], y=[1, 1], mode='lines', line=dict(color='Red', width=2)))
+    fig.update_layout(title=title, xaxis_title="Value", yaxis_title="Count", width=600, height=400, bargap=0.1, showlegend=False)
     fig.show()
 
 
 # Correlation plot
 def plot_correlation(U, title="Correlation plot of consequtive numbers."):
-    n = len(U)
-    fig = go.Figure(data=go.Scatter(x=U[:n-1], y=U[1:n], mode='markers', marker=dict(size=2, color='Blue')))
-    fig.update_layout(
-        title=title,
-        xaxis_title=r"$U_{i-1}$",
-        yaxis_title=r"$U_{i}$",
-        width=600,
-        height=600,
-    )
+    fig = go.Figure(go.Scatter(x=U[:-1], y=U[1:], mode='markers', marker=dict(size=2, color='Blue')))
+    fig.update_layout(title=title, xaxis_title=r"$U_{i-1}$", yaxis_title=r"$U_{i}$", width=600, height=600)
     fig.show()
 
 
