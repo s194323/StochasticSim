@@ -4,7 +4,8 @@ import plotly.io as pio
 
 import numpy as np
 import pandas as pd
-from scipy.stats import chi2, norm
+import math
+from scipy.stats import chi2, norm, t
 from scipy.special import kolmogorov
 
 #########################################
@@ -283,7 +284,102 @@ def uniform_2_normal(U):
 ########## COMPUTER EXERCISE 4 ##########
 #########################################
 
+# def blocking_system_simulation(
+#         num_service_units,
+#         num_customers,
+#         arrival_sample_fun,
+#         service_time_sample_fun,
+#         num_samples=None
+#     ):
 
+#     def single_sample():
+#         blocked_customers = 0
+#         event_departure = []
+#         clock = 0
+
+#         for _ in range(num_customers):
+#             arrival_time = clock + arrival_sample_fun()
+
+#             # Remove departed customers
+#             event_departure = [x for x in event_departure if x > arrival_time]
+
+#             # Check if there are available spots
+#             if len(event_departure) < num_service_units:
+#                 # Add customer
+#                 service_time = service_time_sample_fun()
+#                 event_departure.append(arrival_time + service_time)
+#                 event_departure.sort()
+#             else:
+#                 blocked_customers += 1
+            
+#             # Update clock
+#             clock = arrival_time
+        
+#         return blocked_customers/num_customers
+    
+#     if num_samples is None:
+#         return single_sample()
+#     else:
+#         return np.array([single_sample() for _ in range(num_samples)])
+
+
+def blocking_system_simulation(
+        num_service_units,
+        num_customers,
+        arrival_sample_fun,
+        service_time_sample_fun,
+        num_samples=None
+    ):
+
+
+    def single_sample():
+        # Initialize the state of the system
+        service_units_occupied = np.zeros(num_service_units)
+        blocked_customers = 0
+
+        # Main loop
+        for _ in range(num_customers):
+
+            # Sample arrival of a new customer
+            arrival = arrival_sample_fun()
+
+            # Update the state of the system
+            service_units_occupied = np.maximum(0, service_units_occupied - arrival)
+
+            # Check if a service unit is available
+            if any(service_units_occupied == 0):
+                # Sample the service time and assign the customer to the first available service unit
+                service_time = service_time_sample_fun()
+                service_unit = np.argmin(service_units_occupied)
+                service_units_occupied[service_unit] = service_time
+            else:
+                # Block the customer
+                blocked_customers += 1
+    
+        return blocked_customers/num_customers
+    
+    if num_samples is None:
+        return single_sample()
+    else:
+        return np.array([single_sample() for _ in range(num_samples)])
+
+
+def simulation_stats(theta_hats, alpha, verbose=False):
+    n = len(theta_hats)
+    theta_bar = np.mean(theta_hats)
+    S = np.sqrt((np.sum(theta_hats**2) - n*theta_bar**2)/(n-1))
+    CI = theta_bar + S/np.sqrt(n) * t.ppf([alpha/2, 1-alpha/2], n-1)
+
+    if verbose:
+        print(f"Simulated blocking probability: {np.round(theta_bar, 4)}")
+        print(f"{(1-alpha)*100}% confidence interval: {np.round(CI, 4)}")
+
+    return np.array([theta_bar, theta_bar-CI[0], CI[1]-theta_bar])
+
+
+def analytic_block_prob(lam, s, m):
+    A = lam * s
+    return A**m/math.factorial(m)/np.sum([A**i/math.factorial(i) for i in range(m+1)])
 
 
 #########################################
