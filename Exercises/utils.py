@@ -294,6 +294,8 @@ def describe_sample(data, title=None, alpha=0.05):
     
     if alpha*100 % 1 == 0:
         CI_fraction = int((1-alpha)*100)
+    else:
+        CI_fraction = (1-alpha)*100
 
     print("━"*41)
     print("        >>> SAMPLE STATISTICS <<<        ")
