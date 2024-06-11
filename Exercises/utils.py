@@ -284,6 +284,30 @@ def uniform_2_normal(U):
 ########## COMPUTER EXERCISE 4 ##########
 #########################################
 
+def describe_sample(data, title=None, alpha=0.05):
+    n = len(data)
+    mu = np.mean(data)
+    s = np.std(data, ddof=1)
+    t_val = t.ppf([alpha/2, 1 - alpha/2], n-1)
+    s = np.std(data, ddof=1)
+    CI = mu + t_val * s / np.sqrt(n)
+    
+    if alpha*100 % 1 == 0:
+        CI_fraction = int((1-alpha)*100)
+
+    print("━"*41)
+    print("        >>> SAMPLE STATISTICS <<<        ")
+    if title:
+        pad = " "*int(max(0, ((41-len(title))/2)))
+        print(pad + title + pad)
+    print("━"*41)
+    print(f"Sample size: {n:2d}")
+    print(f"Mean: {mu:.4f}")
+    print(f"Standard deviation: {s:.4f}")
+    print(f"{CI_fraction}% confidence interval: {np.round(CI, 4)}")
+    print("━"*41)
+
+
 # def blocking_system_simulation(
 #         num_service_units,
 #         num_customers,
