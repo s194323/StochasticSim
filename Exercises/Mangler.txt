@@ -1,0 +1,30 @@
+EX 01:
+    - Ret tekst omkring run tests (tester for indepence)
+
+EX 02:
+
+EX 03:
+    - Dobbelt tjek p-værdier
+    - Udregn analytisk gennemsnit og varians for paretto og sammenlign (del 2)
+    - Bedre diskussion til del 3
+    - Skriv til del 4
+
+EX 04:
+    - Mere tekst indimellem kode stykkerne
+
+EX 05:
+    - Beskrivelse til hver opgave
+    - Del 9 mangler
+
+EX 06:
+    - Omskriv udledning af Gibbs sampler
+    - Lav del 3
+    - Skriv forklarende tekst
+
+EX 07:
+    - Skriv forklarende tekst
+    - Ryd op i kode
+
+EX 08:
+    - Skriv forklarende tekst
+    - Ryd op i kode
