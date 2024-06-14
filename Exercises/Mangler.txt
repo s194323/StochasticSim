@@ -1,25 +1,23 @@
 EX 01:
-    - Ret tekst omkring run tests (tester for indepence)
 
 EX 02:
 
 EX 03:
     - Dobbelt tjek p-værdier
-    - Udregn analytisk gennemsnit og varians for paretto og sammenlign (del 2)
     - Bedre diskussion til del 3
-    - Skriv til del 4
 
 EX 04:
     - Mere tekst indimellem kode stykkerne
+    - ryd op i kode
 
 EX 05:
-    - Beskrivelse til hver opgave
+    - tekst til del 5, 6, 7 (heatmap)
     - Del 9 mangler
+    - sammenligning af forskellige metoder?
 
 EX 06:
-    - Omskriv udledning af Gibbs sampler
-    - Lav del 3
     - Skriv forklarende tekst
+    - Forklar metropolis hastings
 
 EX 07:
     - Skriv forklarende tekst
