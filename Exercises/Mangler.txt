@@ -8,7 +8,6 @@ EX 03:
 
 EX 04:
     - Mere tekst indimellem kode stykkerne
-    - ryd op i kode
 
 EX 05:
     - tekst til del 5, 6, 7 (heatmap)
@@ -21,8 +20,6 @@ EX 06:
 
 EX 07:
     - Skriv forklarende tekst
-    - Ryd op i kode
 
 EX 08:
     - Skriv forklarende tekst
-    - Ryd op i kode
