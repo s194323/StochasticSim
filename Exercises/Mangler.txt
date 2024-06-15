@@ -11,7 +11,6 @@ EX 04:
 
 EX 05:
     - tekst til del 5, 6, 7 (heatmap)
-    - Del 9 mangler
     - sammenligning af forskellige metoder?
 
 EX 06:
