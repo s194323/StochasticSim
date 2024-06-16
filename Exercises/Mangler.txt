@@ -17,7 +17,6 @@ EX 06:
     - Dobbelt tjek 6.3 (TA)
 
 EX 07:
-    - Skriv forklarende tekst
+    - Kør koden igen og tilføj afsluttende kommentar
 
 EX 08:
-    - Skriv forklarende tekst
