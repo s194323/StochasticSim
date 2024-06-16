@@ -15,6 +15,7 @@ EX 05:
 
 EX 06:
     - Dobbelt tjek 6.3 (TA)
+    - Missing discussion in 3.e.
 
 EX 07:
     - Kør koden igen og tilføj afsluttende kommentar
