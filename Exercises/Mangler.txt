@@ -14,8 +14,7 @@ EX 05:
     - sammenligning af forskellige metoder?
 
 EX 06:
-    - Skriv forklarende tekst
-    - Forklar metropolis hastings
+    - Dobbelt tjek 6.3 (TA)
 
 EX 07:
     - Skriv forklarende tekst
