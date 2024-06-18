@@ -68,8 +68,8 @@ class Patient:
             idx = [i for i, ward in enumerate(wards) if ward.type == self.type][0]
             
             #Get new ward type
-            new_idx = np.random.choice(range(len(wards)), p=relocation_probabilities[idx])
-            self.type = wards[new_idx].type
+            new_ward = np.random.choice(wards, p=relocation_probabilities[idx])
+            self.type = new_ward.type #change patient type
             #try to admit patient to new ward
             self.occupy_bed(wards, patient_list, relocation_probabilities)
         return
