@@ -1,5 +1,6 @@
 import bisect
 import numpy as np
+
 class Patient:
     def __init__(self, arrival_time, occupancy_time, type):
         """
@@ -10,6 +11,7 @@ class Patient:
         """
         self.occupancy_time = occupancy_time
         self.rejected = False
+        self.lost = False
         self.type = type
         
         #event
@@ -22,39 +24,83 @@ class Patient:
     def __repr__(self):
         return f"Patient {self.type} with {self.next_event} at time {self.next_event_time}"
     
-    def occupy_bed(self, wards, event_list):
+    def occupy_bed(self, wards, patient_list, relocation_probabilities):
+        """occupies a bed in the ward if there is space
+
+        Args:
+            wards (list): list of ward objects
+            patient_list (list): sorted list of patient objects
+            relocation_probabilities (np.array): probability matrix for patient relocation
+
+        Returns:
+            penalty: 0 if patient was admitted, urgency points if patient was rejected
+        """
+        #get ward corresponding to patient type
         ward = [ward for ward in wards if ward.type == self.type][0]
         if ward.admit():
             self.next_event = "Discharge"
             self.next_event_time = self.next_event_time + self.occupancy_time
-            #insert patient into sorted event list
-            bisect.insort(event_list, self, key=lambda x: x.next_event_time)
+            #re-insert patient into sorted event list
+            bisect.insort(patient_list, self, key=lambda x: x.next_event_time)
+            return 0
         else:
-            self.get_rejected(wards)
-        return
-        
-    def get_rejected(self, wards):
-        self.rejected = True
-        #TODO
+            self.get_rejected(wards, patient_list, relocation_probabilities)
+            return ward.urgency_points
+    
+    def discharge(self, wards):
+        """Disconnects a patient from the ward
+
+        Args:
+            wards (list): list of ward objects
+        """
+        #get ward corresponding to patient type
+        ward = [ward for ward in wards if ward.type == self.type][0]
+        ward.discharge()
         return
     
-def initialize_patients(num_patients, arrival_interval_function, occupancy_time_function):
-    """
-    Initializes the patients
+    def get_rejected(self, wards, patient_list, relocation_probabilities):
+        if self.rejected: #if patient has already been rejected then he's lost.
+            self.lost = True
+            return
+        else: # Otherwise, try to admit him to the new ward
+            self.rejected = True
+            #get idx from ward the rejected ward
+            idx = [i for i, ward in enumerate(wards) if ward.type == self.type][0]
+            
+            #Get new ward type
+            new_idx = np.random.choice(range(len(wards)), p=relocation_probabilities[idx])
+            self.type = wards[new_idx].type
+            #try to admit patient to new ward
+            self.occupy_bed(wards, patient_list, relocation_probabilities)
+        return
     
+def initialize_patients(total_time, patient_types, arrival_interval_function, occupancy_time_function):
+    """Initializes patients based on the input parameters
+
     Args:
-        num_patients (Dict): Number of patients of each type. Example, {'A' : 10, 'B' : 20, 'C' : 30, 'D' : 40, 'E' : 50}
-        arrival_interval_function (function): Function that generates the arrival interval between patients
-        occupancy_time_function (function): Function that generates the occupancy time of a patient
+        total_time (int): total time of simulation
+        patient_types (list): list of patient types (A, B, C, D, E)
+        arrival_interval_function (function): function that takes type as input and returns the arrival interval
+        occupancy_time_function (function): function that takes type as input and returns the occupancy time
+
     Returns:
-        list: List of Patient sorted by arrival time
+        patients: list of patients sorted by arrival time
     """
+    
     patients = []
-    for type, num in num_patients.items():
-        arrival_intervals = arrival_interval_function(type, num)
-        arrival_times = np.cumsum(arrival_intervals)
-        occupancy_times = occupancy_time_function(type, num)
-        patients = patients + [Patient(arrival_time, occupancy_time, type) for arrival_time, occupancy_time in zip(arrival_times, occupancy_times)]
-    #sort patients by event time
-    patients = sorted(patients, key=lambda x: x.next_event_time)
+    for type in patient_types:
+        arrival_time = 0
+        new_time = arrival_interval_function(type)
+        while arrival_time + new_time < total_time:
+            #generate occupancy time
+            arrival_time += new_time
+            occupancy_time = occupancy_time_function(type)
+            #create patient object
+            patient = Patient(arrival_time, occupancy_time, type)
+            #insert patient into sorted list
+            bisect.insort(patients, patient, key=lambda x: x.next_event_time)
+            
+            #generate arrival time
+            new_time = arrival_interval_function(type)
     return patients
+
