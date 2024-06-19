@@ -11,6 +11,11 @@ class Ward:
         self.current_occupancy = 0
         self.urgency_points = urgency_points
         
+        #Performance Metrics
+        self.total_arrivals = 0 #Total number of patients that have arrived at the ward
+        self.total_rejections = 0 #Total number of patients that have been rejected from the ward
+        self.total_relocations = 0 #Total number of patients that have been successfully relocated to another ward
+        
     @classmethod
     def from_dataframe(cls, df, type):
         """
@@ -33,10 +38,12 @@ class Ward:
         Returns:
             Bool: Whether a patient was admitted or not
         """
+        self.total_arrivals += 1
         if self.current_occupancy < self.capacity:
             self.current_occupancy += 1
             return True
         else:
+            self.total_rejections += 1
             return False
         
     def discharge(self):
@@ -51,11 +58,32 @@ class Ward:
         else:
             return False
         
-    def __repr__(self):
-        return f"{self.type} Ward with {self.capacity} beds and {self.current_occupancy} patients currently admitted."
-    def __str__(self):
-        return f"{self.type} Ward with {self.capacity} beds and {self.current_occupancy} patients currently admitted."
+    def get_performance_metrics(self):
+        """
+        Returns the performance metrics of the ward
+        
+        Returns:
+            dict: Dictionary containing the performance metrics of the ward
+        """
+        return {"Occupied probability": self.total_rejections/self.total_arrivals,
+                "Estimated admissions": self.total_arrivals - self.total_rejections,
+                "Estimated rejections": self.total_rejections,
+                "Estimated relocations": self.total_relocations}
+        
     
+    def reset_metrics(self):
+        """
+        Resets the performance metrics of the ward
+        """
+        self.total_arrivals = 0
+        self.total_rejections = 0
+        self.total_relocations = 0
+        self.current_occupancy = 0
+    
+    def __repr__(self):
+        return f"{self.type} Ward with {self.capacity} beds and {self.urgency_points} urgency points."
+    def __str__(self):
+        return f"{self.type} Ward with {self.capacity} beds and {self.urgency_points} urgency points."
 
 def initialize_wards(df):
     """

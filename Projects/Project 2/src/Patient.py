@@ -33,7 +33,7 @@ class Patient:
             relocation_probabilities (np.array): probability matrix for patient relocation
 
         Returns:
-            penalty: 0 if patient was admitted, urgency points if patient was rejected
+            Rejected: Boolean indicating whether the patient was rejected or not
         """
         #get ward corresponding to patient type
         ward = [ward for ward in wards if ward.type == self.type][0]
@@ -42,10 +42,10 @@ class Patient:
             self.next_event_time = self.next_event_time + self.occupancy_time
             #re-insert patient into sorted event list
             bisect.insort(patient_list, self, key=lambda x: x.next_event_time)
-            return 0
+            return True
         else:
             self.get_rejected(wards, patient_list, relocation_probabilities)
-            return ward.urgency_points
+            return False
     
     def discharge(self, wards):
         """Disconnects a patient from the ward
@@ -71,7 +71,9 @@ class Patient:
             new_ward = np.random.choice(wards, p=relocation_probabilities[idx])
             self.type = new_ward.type #change patient type
             #try to admit patient to new ward
-            self.occupy_bed(wards, patient_list, relocation_probabilities)
+            relocated = self.occupy_bed(wards, patient_list, relocation_probabilities)
+            #update performance metric
+            wards[idx].total_relocations += 1
         return
     
 def initialize_patients(total_time, patient_types, arrival_interval_function, occupancy_time_function):
