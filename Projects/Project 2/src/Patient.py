@@ -73,7 +73,8 @@ class Patient:
             #try to admit patient to new ward
             relocated = self.occupy_bed(wards, patient_list, relocation_probabilities)
             #update performance metric
-            wards[idx].total_relocations += 1
+            if relocated:
+                wards[idx].total_relocations += 1
         return
     
 def initialize_patients(total_time, patient_types, arrival_interval_function, occupancy_time_function):
