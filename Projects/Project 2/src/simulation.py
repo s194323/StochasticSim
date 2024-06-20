@@ -50,3 +50,21 @@ def run_simulations(total_time,  #total
         #compute urgency weighted rejection penalty
         average_performance["Weighted penalty"] = np.sum(average_performance[ward]["Estimated rejections"]*ward.urgency_points for ward in wards)
     return average_performance
+
+def compute_gradient(total_time,  #total
+                    wards, #list of ward objects
+                    relocation_probability, #probability matrix for patient relocation
+                    arrival_interval_function, #function to sample arrival intervals
+                    occupancy_time_function, #function to sample occupancy times
+                    n_simulations = 10, #number of simulations to run
+                    verbose = False #whether to print the performance metrics of each simulation
+                    ):
+    for ward in wards:
+        ward.capacity += 1
+        performance_upper = run_simulations(total_time, wards, relocation_probability, arrival_interval_function, occupancy_time_function, n_simulations = n_simulations, verbose = verbose)
+        ward.capacity -= 2
+        performance_lower = run_simulations(total_time, wards, relocation_probability, arrival_interval_function, occupancy_time_function, n_simulations = n_simulations, verbose = verbose)
+        ward.capacity += 1
+        gradient = (performance_upper["Weighted penalty"] - performance_lower["Weighted penalty"])/2
+        ward.gradient = gradient
+    return np.array([ward.gradient for ward in wards])
