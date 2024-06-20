@@ -1,0 +1,34 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{hyperref, booktabs, fancyhdr, titlesec}
+\usepackage{caption, subcaption, enumerate, textcomp}
+\usepackage{pdfpages}
+\usepackage{float, tikz, graphicx, pgfplots, pgfplotstable, listings}
+\usepgfplotslibrary{fillbetween}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{external}
+\tikzexternalize
+\usepackage{biblatex}
+\addbibresource{references.bib}
+
+\setlength{\parskip}{1em}
+
+
+% Define python code style
+\lstset{
+    language=Python,
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!50!black},
+    stringstyle=\color{orange},
+    showstringspaces=false,
+    breaklines=true,
+    postbreak=\mbox{\textcolor{red}{$\hookrightarrow$}\space},
+    tabsize=4,
+    backgroundcolor=\color{white}, % Set background to white
+    frame=none, % Remove frame
+    numbers=none, % Remove line numbers
+}
+
+\setlength{\parskip}{1em}
