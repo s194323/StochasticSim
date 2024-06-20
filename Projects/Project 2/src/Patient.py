@@ -18,6 +18,9 @@ class Patient:
         self.next_event = "Admission"
         self.next_event_time = arrival_time
         
+        #get ward lookup
+        self.ward_lookup = {"A": 0, "B": 1, "C": 2, "D": 3, "E": 4, "F" : 5}
+        
 
     def __str__(self):
         return f"Patient {self.type} with {self.next_event} at time {self.next_event_time}"
@@ -36,8 +39,8 @@ class Patient:
             Rejected: Boolean indicating whether the patient was rejected or not
         """
         #get ward corresponding to patient type
-        ward = [ward for ward in wards if ward.type == self.type][0]
-        if ward.admit():
+        ward = wards[self.ward_lookup[self.type]]
+        if ward.admit(self.next_event_time):
             self.next_event = "Discharge"
             self.next_event_time = self.next_event_time + self.occupancy_time
             #re-insert patient into sorted event list
@@ -54,7 +57,7 @@ class Patient:
             wards (list): list of ward objects
         """
         #get ward corresponding to patient type
-        ward = [ward for ward in wards if ward.type == self.type][0]
+        ward = wards[self.ward_lookup[self.type]]
         ward.discharge()
         return
     

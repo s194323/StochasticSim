@@ -1,5 +1,5 @@
 class Ward:
-    def __init__(self, type, capacity, urgency_points):
+    def __init__(self, type, capacity, urgency_points, real_time_tracking = False):
         """
         Args:
             type (Char): Ward type (A, B, C, D, E)
@@ -10,14 +10,19 @@ class Ward:
         self.capacity = capacity
         self.current_occupancy = 0
         self.urgency_points = urgency_points
+        self.real_time_tracking = real_time_tracking
         
         #Performance Metrics
         self.total_arrivals = 0 #Total number of patients that have arrived at the ward
         self.total_rejections = 0 #Total number of patients that have been rejected from the ward
         self.total_relocations = 0 #Total number of patients that have been successfully relocated to another ward
         
+        if self.real_time_tracking:
+            self.occupancy = []
+            self.rejections = []
+                    
     @classmethod
-    def from_dataframe(cls, df, type):
+    def from_dataframe(cls, df, type, real_time_tracking = False):
         """
         Initialization method for the Ward object that takes in a dataframe and a ward type and returns a Ward object with the corresponding data from the dataframe.
         
@@ -30,9 +35,9 @@ class Ward:
         type = type
         capacity = df["Bed Capacity"][type]
         urgency_points = df["Urgency Points"][type]
-        return cls(type, capacity, urgency_points)
+        return cls(type, capacity, urgency_points, real_time_tracking = real_time_tracking)
     
-    def admit(self):
+    def admit(self, time):
         """ admits a patient to the ward if there is space
 
         Returns:
@@ -41,9 +46,13 @@ class Ward:
         self.total_arrivals += 1
         if self.current_occupancy < self.capacity:
             self.current_occupancy += 1
+            if self.real_time_tracking:
+                self.occupancy.append((time, self.current_occupancy))
             return True
         else:
             self.total_rejections += 1
+            if self.real_time_tracking:
+                self.rejections.append(time)
             return False
         
     def discharge(self):
@@ -79,13 +88,15 @@ class Ward:
         self.total_rejections = 0
         self.total_relocations = 0
         self.current_occupancy = 0
+        self.occupancy = []
+        self.rejections = []
     
     def __repr__(self):
         return f"{self.type} Ward with {self.capacity} beds and {self.urgency_points} urgency points."
     def __str__(self):
         return f"{self.type} Ward with {self.capacity} beds and {self.urgency_points} urgency points."
 
-def initialize_wards(df):
+def initialize_wards(df, real_time_tracking = False):
     """
     Initializes the wards using the data from the dataframe
     
@@ -96,6 +107,6 @@ def initialize_wards(df):
     """
     wards = []
     for ward_type in df.index:
-        ward = Ward.from_dataframe(df, ward_type)
+        ward = Ward.from_dataframe(df, ward_type, real_time_tracking = real_time_tracking)
         wards.append(ward)
     return wards

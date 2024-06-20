@@ -34,6 +34,8 @@ def run_simulations(total_time,  #total
     average_performance = {ward: {metric: 0 for metric in ["Occupied probability", "Estimated admissions", "Estimated rejections","Estimated relocations"]} for ward in wards}  #initialize average performance metrics
     
     for i in range(n_simulations):
+        for ward in wards:
+            ward.reset_metrics()
         patients = initialize_patients(total_time, [ward.type for ward in wards], arrival_interval_function, occupancy_time_function) #initialize patients
         
         performance_dict = simulation_loop(patients, wards, relocation_probability)
@@ -44,8 +46,6 @@ def run_simulations(total_time,  #total
                 print(f"{ward}: {performance_dict[ward]}")
                 
         average_performance = {ward: {metric: average_performance[ward][metric] + performance_dict[ward][metric]/n_simulations for metric in ["Occupied probability", "Estimated admissions", "Estimated rejections","Estimated relocations"]} for ward in wards}  #update average ward specific performance metrics
-        for ward in wards:
-            ward.reset_metrics()
             
         #compute urgency weighted rejection penalty
         average_performance["Weighted penalty"] = np.sum(average_performance[ward]["Estimated rejections"]*ward.urgency_points for ward in wards)
