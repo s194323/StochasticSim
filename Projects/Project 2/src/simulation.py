@@ -2,7 +2,7 @@ from src.Ward import Ward, initialize_wards
 from src.Patient import Patient, initialize_patients
 import numpy as np
 
-def simulation_loop(patients, wards, relocation_probabilities):
+def simulation_loop(patients, wards, relocation_probabilities, burn_in_time = 15):
     """Runs the simulation loop
 
     Args:
@@ -13,8 +13,16 @@ def simulation_loop(patients, wards, relocation_probabilities):
     Returns:
         (Dict): dictionary containing the performance metrics for each ward
     """
+    burned = False
+
     while len(patients) > 0:
         patient = patients.pop(0)
+        #reset performance metrics first time burn in time is reached
+        if patient.next_event_time >= burn_in_time and not burned:
+            for ward in wards:
+                ward.reset_metrics()
+            burned = True
+
         if patient.next_event == "Admission":
             patient.occupy_bed(wards, patients, relocation_probabilities)
         else:
@@ -28,7 +36,8 @@ def run_simulations(total_time,  #total
                     arrival_interval_function, #function to sample arrival intervals
                     occupancy_time_function, #function to sample occupancy times
                     n_simulations = 10, #number of simulations to run
-                    verbose = False #whether to print the performance metrics of each simulation
+                    verbose = False, #whether to print the performance metrics of each simulation
+                    burn_in_time = 15 #burn in time for the simulation
                     ):
         
     average_performance = {ward: {metric: 0 for metric in ["Occupied probability", "Estimated admissions", "Estimated rejections","Estimated relocations"]} for ward in wards}  #initialize average performance metrics
@@ -36,9 +45,9 @@ def run_simulations(total_time,  #total
     for i in range(n_simulations):
         for ward in wards:
             ward.reset_metrics()
-        patients = initialize_patients(total_time, [ward.type for ward in wards], arrival_interval_function, occupancy_time_function) #initialize patients
+        patients = initialize_patients(total_time+burn_in_time, [ward.type for ward in wards], arrival_interval_function, occupancy_time_function) #initialize patients
         
-        performance_dict = simulation_loop(patients, wards, relocation_probability)
+        performance_dict = simulation_loop(patients, wards, relocation_probability, burn_in_time = burn_in_time) #run simulation loop
         
         if verbose:
             print(f"Simulation {i+1} results:")

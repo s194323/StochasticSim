@@ -55,7 +55,7 @@ class Ward:
                 self.rejections.append(time)
             return False
         
-    def discharge(self):
+    def discharge(self, time):
         """discharges a patient from the ward if there is a patient to discharge
 
         Returns:
@@ -63,6 +63,8 @@ class Ward:
         """
         if self.current_occupancy > 0:
             self.current_occupancy -= 1
+            if self.real_time_tracking:
+                self.occupancy.append((time, self.current_occupancy))
             return True
         else:
             return False
@@ -87,7 +89,7 @@ class Ward:
         self.total_arrivals = 0
         self.total_rejections = 0
         self.total_relocations = 0
-        self.current_occupancy = 0
+        #self.current_occupancy = 0
         self.occupancy = []
         self.rejections = []
     

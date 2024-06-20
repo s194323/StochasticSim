@@ -58,7 +58,7 @@ class Patient:
         """
         #get ward corresponding to patient type
         ward = wards[self.ward_lookup[self.type]]
-        ward.discharge()
+        ward.discharge(self.next_event_time)
         return
     
     def get_rejected(self, wards, patient_list, relocation_probabilities):
