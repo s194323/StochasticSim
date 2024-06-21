@@ -56,8 +56,8 @@ def run_simulations(total_time,  #total
                 
         average_performance = {ward: {metric: average_performance[ward][metric] + performance_dict[ward][metric]/n_simulations for metric in ["Occupied probability", "Estimated admissions", "Estimated rejections","Estimated relocations"]} for ward in wards}  #update average ward specific performance metrics
             
-        #compute urgency weighted rejection penalty
-        average_performance["Weighted penalty"] = np.sum(average_performance[ward]["Estimated rejections"]*ward.urgency_points for ward in wards)
+    #compute urgency weighted rejection penalty
+    average_performance["Weighted penalty"] = np.sum(average_performance[ward]["Estimated rejections"]*ward.urgency_points for ward in wards)
     return average_performance
 
 def compute_gradient(total_time,  #total
