@@ -14,7 +14,9 @@ class Ward:
         
         #Performance Metrics
         self.total_arrivals = 0 #Total number of patients that have arrived at the ward
+        self.total_admissions = 0 #Total number of patients that have been admitted to the ward
         self.total_rejections = 0 #Total number of patients that have been rejected from the ward
+        self.total_lost = 0 #Total number of patients that have been lost
         self.total_relocations = 0 #Total number of patients that have been successfully relocated to another ward
         
         if self.real_time_tracking:
@@ -46,6 +48,7 @@ class Ward:
         self.total_arrivals += 1
         if self.current_occupancy < self.capacity:
             self.current_occupancy += 1
+            self.total_admissions += 1
             if self.real_time_tracking:
                 self.occupancy.append((time, self.current_occupancy))
             return True
@@ -76,9 +79,10 @@ class Ward:
         Returns:
             dict: Dictionary containing the performance metrics of the ward
         """
-        return {"Occupied probability": self.total_rejections/self.total_arrivals,
-                "Estimated admissions": self.total_arrivals - self.total_rejections,
+        return {"Occupied probability": self.total_rejections/(self.total_arrivals if self.total_arrivals > 0 else 1),
+                "Estimated admissions": self.total_admissions,
                 "Estimated rejections": self.total_rejections,
+                "Estimated lost": self.total_lost,
                 "Estimated relocations": self.total_relocations}
         
     
@@ -86,9 +90,12 @@ class Ward:
         """
         Resets the performance metrics of the ward
         """
-        self.total_arrivals = 0
-        self.total_rejections = 0
-        self.total_relocations = 0
+        #Performance Metrics
+        self.total_arrivals = 0 #Total number of patients that have arrived at the ward
+        self.total_admissions = 0 #Total number of patients that have been admitted to the ward
+        self.total_rejections = 0 #Total number of patients that have been rejected from the ward
+        self.total_lost = 0 #Total number of patients that have been lost
+        self.total_relocations = 0 #Total number of patients that have been successfully relocated to another ward
         #self.current_occupancy = 0
         self.occupancy = []
         self.rejections = []

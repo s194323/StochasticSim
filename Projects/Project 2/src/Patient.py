@@ -10,9 +10,15 @@ class Patient:
             type (Char): Patient type (A, B, C, D, E)
         """
         self.occupancy_time = occupancy_time
-        self.rejected = False
-        self.lost = False
+
         self.type = type
+        self.original_type = type
+        
+        #performance metrics
+        self.admitted = False
+        self.rejected = False
+        self.relocated = False
+        self.lost = False
         
         #event
         self.next_event = "Admission"
@@ -42,6 +48,7 @@ class Patient:
         ward = wards[self.ward_lookup[self.type]]
         if ward.admit(self.next_event_time):
             self.next_event = "Discharge"
+            self.admitted = True
             self.next_event_time = self.next_event_time + self.occupancy_time
             #re-insert patient into sorted event list
             bisect.insort(patient_list, self, key=lambda x: x.next_event_time)
@@ -64,6 +71,8 @@ class Patient:
     def get_rejected(self, wards, patient_list, relocation_probabilities):
         if self.rejected: #if patient has already been rejected then he's lost.
             self.lost = True
+            ward =  wards[self.ward_lookup[self.type]]
+            ward.total_lost += 1
             return
         else: # Otherwise, try to admit him to the new ward
             self.rejected = True
@@ -78,6 +87,7 @@ class Patient:
             #update performance metric
             if relocated:
                 wards[idx].total_relocations += 1
+                self.relocated = True
         return
     
 def initialize_patients(total_time, patient_types, arrival_interval_function, occupancy_time_function):
@@ -110,3 +120,27 @@ def initialize_patients(total_time, patient_types, arrival_interval_function, oc
             new_time = arrival_interval_function(type)
     return patients
 
+
+def get_performance_metrics(patients):
+    """
+    Calculates the performance metrics for the simulation
+
+    Args:
+        patients (list): list of patient objects
+
+    Returns:
+        (Dict): dictionary containing the performance metrics for the simulation
+    """
+    performance = {}
+    for patient in patients:
+        if patient.original_type not in performance:
+            performance[patient.original_type] = {"Admitted": 0, "Rejected": 0, "Lost": 0, "Relocated": 0}
+        if patient.admitted:
+            performance[patient.original_type]["Admitted"] += 1
+        if patient.rejected:
+            performance[patient.original_type]["Rejected"] += 1
+        if patient.lost:
+            performance[patient.original_type]["Lost"] += 1
+        if patient.relocated:
+            performance[patient.original_type]["Relocated"] += 1
+    return performance
