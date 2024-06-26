@@ -83,7 +83,8 @@ def kolmogorov_smirnov_test(U, ps=None):
         F_obs = np.cumsum(n_obs / n)
 
     # Compute test statistic
-    Dn = max(abs(F_exp-F_obs))
+    adjustment = np.sqrt(n) + 0.12 + (0.11/np.sqrt(n))
+    Dn = adjustment*max(abs(F_exp-F_obs))
 
     # Compute p-value
     p = kolmogorov(Dn)
